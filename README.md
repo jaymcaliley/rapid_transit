@@ -19,7 +19,7 @@ class WombatImporter < RapidTransit::Base
   # Update the wombat's attributes
   update_attributes :wombat, :color => :color, :furriness => :furriness
 
-  # Associate the food
+  # Set associations
   exec do |row|
     row[:wombat].foods << row[:food]
   end
