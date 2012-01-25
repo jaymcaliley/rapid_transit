@@ -3,13 +3,36 @@ class RapidTransit::Base
   # Define singleton for class variables whose values will not be inherited by
   # subclasses of RapidTransit::Base
   class << self
-    attr_accessor :delimiter, :strip, :column_names, :actions
-    @strip = true
+    attr_accessor :delimiter, :strip, :column_names, :actions, :error_handler
   end
 
   # Set the delimiter used in the file
   def self.delimit(delimiter)
     @delimiter = delimiter
+  end
+
+  def self.delimiter
+    @delimiter ||= ","
+  end
+
+  # Set whether to strip whitespace from column values
+  def self.strip_columns(strip)
+    @strip = strip
+  end
+
+  def self.strip
+    @strip.present? ? @strip : @strip = true
+  end
+
+  # Set a block to execute on error
+  def self.on_error(&block)
+    msg = 'Error handler must be a block that accepts two parameters'
+    raise ArgumentError, msg, caller unless block_given? && block.arity == 2
+    @error_handler = block
+  end
+
+  def self.error_handler
+    @error_handler ||= Proc.new { |error, row| raise error }
   end
 
   # Define the list of columns expected in the CSV file
@@ -59,12 +82,27 @@ class RapidTransit::Base
   # Parse a CSV file
   def self.parse(file)
     raise RapidTransit::NoFileError, "File is blank", caller if file.blank?
+    total = file.count
+    file.rewind
+    cr = "\r"
+    clear = "\e[0K"
+    reset = cr + clear
     before_parse
-    count = file.inject(0) do |sum, line|
-      RapidTransit::Row.new(self, line, sum + 1).parse
-      sum + 1
+    count = 0
+    file.each_line do |line|
+      count += 1
+      row = RapidTransit::Row.new(self, line, count)
+      begin
+        row.parse
+      rescue => e
+        error_handler.call e, row
+      end
+      print "#{reset}Parsed #{count} of #{total} records"
+      STDOUT.flush
     end
     after_parse
+    print reset
+    STDOUT.flush
     count
   end
 
