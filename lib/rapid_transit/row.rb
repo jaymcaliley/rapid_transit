@@ -4,11 +4,11 @@ class RapidTransit::Row
   attr_accessor :line
   attr_accessor :num
 
-  def initialize(parser, line, num, delimiter = "\t")
+  def initialize(parser, line, num)
     @parser = parser
     @line = line
     @num = num
-    @values = extract_columns delimiter
+    @values = extract_columns
   end
 
   def parse
@@ -48,8 +48,9 @@ private
     end
   end
 
-  def extract_columns(delimiter)
-    columns = line.split(delimiter)
+  def extract_columns
+    columns = line.split(parser.delimiter)
+    columns = columns.map(&:strip) if parser.strip
     unless columns.count == parser.column_names.count
       message = "Wrong number of columns in line #{num}:\n#{line}\n" +
                 "(Expected columns: #{parser.column_names.join(", ")})"

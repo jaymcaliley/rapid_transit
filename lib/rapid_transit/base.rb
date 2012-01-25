@@ -3,7 +3,13 @@ class RapidTransit::Base
   # Define singleton for class variables whose values will not be inherited by
   # subclasses of RapidTransit::Base
   class << self
-    attr_accessor :column_names, :actions
+    attr_accessor :delimiter, :strip, :column_names, :actions
+    @strip = true
+  end
+
+  # Set the delimiter used in the file
+  def self.delimit(delimiter)
+    @delimiter = delimiter
   end
 
   # Define the list of columns expected in the CSV file
