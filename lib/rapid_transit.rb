@@ -1,4 +1,4 @@
-class RapidTransit
+module RapidTransit
   class ConfigError < StandardError; end
   class NoFileError < StandardError; end
   class ColumnMismatchError < StandardError; end
@@ -8,5 +8,6 @@ class RapidTransit
 end
 
 require 'rapid_transit/action'
+require 'rapid_transit/action_list'
 require 'rapid_transit/row'
 require 'rapid_transit/base'
