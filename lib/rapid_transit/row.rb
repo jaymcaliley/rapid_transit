@@ -8,7 +8,7 @@ class RapidTransit::Row
     @parser = parser
     @line = line
     @num = num
-    @values = extract_columns
+    @values = input_values
   end
 
   def parse
@@ -36,19 +36,7 @@ class RapidTransit::Row
     @values[key] = val
   end
 
-private
-
-  def check_result(action)
-    unless !action.result_saved? || values[action.key] && values[action.key].id
-      record = values[action.key]
-      errors = record ? record.errors.full_messages.join("\n") : "Not found"
-      message = "Error parsing #{action.key} on line #{num}: #{errors}\n\n" +
-                parser.column_names.map {|c| "#{c}: #{values[c]}"}.join("\n")
-      raise RapidTransit::NotFoundError, message, caller
-    end
-  end
-
-  def extract_columns
+  def input_values
     columns = line.split(parser.delimiter)
     columns = columns.map(&:strip) if parser.strip
     unless columns.count == parser.column_names.count
@@ -58,6 +46,17 @@ private
     end
     array = parser.column_names.zip(columns).map { |key, value| [key, value] }
     Hash[array]
+  end
+
+private
+
+  def check_result(action)
+    unless !action.result_saved? || values[action.key] && values[action.key].id
+      record = values[action.key]
+      errors = record ? record.errors.full_messages.join("\n") : "Not found"
+      message = "Error parsing #{action.key} on line #{num}: #{errors}\n"
+      raise RapidTransit::NotFoundError, message, caller
+    end
   end
 
 end
