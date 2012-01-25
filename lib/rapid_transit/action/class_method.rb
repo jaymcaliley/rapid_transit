@@ -4,7 +4,7 @@ class RapidTransit::Action::ClassMethod < RapidTransit::Action::Base
 
   def initialize(action_name, model_name, *args)
     super
-    @model = @key.to_s.classify.constantize
+    @model = @key.to_s.camelize.constantize
     @attributes = args.extract_options!.stringify_keys
     @key = args.first unless args.empty?
     @validations += [:model, :attributes]
