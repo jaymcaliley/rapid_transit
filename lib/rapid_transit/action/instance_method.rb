@@ -36,7 +36,7 @@ private
 
   def hash_params(row)
     array = attributes.map do |key, val|
-      [key, row[val]]
+      val.is_a?(Symbol) ? [key, row[val]] : [key, val]
     end
     Hash[array]
   end
