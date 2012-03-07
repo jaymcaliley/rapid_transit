@@ -16,12 +16,14 @@ class RapidTransit::Base
   end
 
   # Set whether to strip whitespace from column values
-  def self.strip_columns(strip)
-    @strip = strip
+  def self.strip_columns(strip_val)
+    @strip = strip_val
   end
 
   def self.strip
-    @strip.present? ? @strip : @strip = true
+    #can't do ||= b/c its boolean.  if strip was false it would turn into true
+    @strip = true if @strip.nil?
+    @strip
   end
 
   # Set a block to execute on error
