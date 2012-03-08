@@ -1,8 +1,5 @@
 class RapidTransit::Row
-  attr_accessor :values
-  attr_accessor :parser
-  attr_accessor :line
-  attr_accessor :num
+  attr_accessor :values, :parser, :line, :num
 
   def initialize(parser, line, num)
     @parser = parser
@@ -37,7 +34,7 @@ class RapidTransit::Row
   end
 
   def input_values
-    columns = line.split(parser.delimiter)
+    columns = CSV.parse_line(line, :col_sep => parser.delimiter)
     columns = columns.map(&:strip) if parser.strip
     unless columns.count == parser.column_names.count
       message = "Wrong number of columns in line #{num}:\n#{line}\n" +

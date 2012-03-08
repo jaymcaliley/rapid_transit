@@ -19,5 +19,4 @@ class RapidTransit::ActionList
   def keys
     columns + @actions.map { |a| a.key }
   end
-
 end
