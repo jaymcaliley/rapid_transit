@@ -1,3 +1,5 @@
+require 'csv'
+
 class RapidTransit::Row
   attr_accessor :values, :parser, :line, :num
 
