@@ -65,5 +65,4 @@ private
     msg = "#{name} must be a Symbol"
     raise RapidTransit::ConfigError, msg, caller unless value.is_a? Symbol
   end
-
 end
