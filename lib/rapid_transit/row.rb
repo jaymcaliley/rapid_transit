@@ -37,7 +37,7 @@ class RapidTransit::Row
 
   def input_values
     columns = CSV.parse_line(line, :col_sep => parser.delimiter)
-    columns = columns.map(&:strip) if parser.strip
+    columns = columns.map { |c| c.strip unless c.nil? } if parser.strip
     unless columns.count == parser.column_names.count
       message = "Wrong number of columns in line #{num}:\n#{line}\n" +
                 "(Expected columns: #{parser.column_names.join(", ")})"
