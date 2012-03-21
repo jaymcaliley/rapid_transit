@@ -26,3 +26,9 @@ class WombatImporter < RapidTransit::Base
 
 end
 ```
+
+The commands listed in the WombatImporter will be executed for each line in the text file. After building your importer, you can parse your text file by calling:
+
+```ruby
+WombatImporter.parse File.open('/path/to/file')
+```
