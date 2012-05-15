@@ -3,7 +3,8 @@ class RapidTransit::Base
   # Define singleton for class variables whose values will not be inherited by
   # subclasses of RapidTransit::Base
   class << self
-    attr_accessor :delimiter, :strip, :column_names, :actions, :error_handler
+    attr_accessor :delimiter, :strip, :column_names, :actions, :error_handler,
+                  :print_status
   end
 
   # Set the delimiter used in the file
@@ -13,6 +14,11 @@ class RapidTransit::Base
 
   def self.delimiter
     @delimiter ||= ","
+  end
+
+  def self.print_status
+    @print_status ||= Proc.new { !Rails.env.test? }
+    @print_status.is_a?(Proc) ? @print_status.call : @print_status
   end
 
   # Set whether to strip whitespace from column values
@@ -99,12 +105,16 @@ class RapidTransit::Base
       rescue => e
         error_handler.call e, row
       end
-      print "#{reset}Parsed #{count} of #{total} records"
-      STDOUT.flush
+      if print_status
+        print "#{reset}Parsed #{count} of #{total} records"
+        STDOUT.flush
+      end
     end
     after_parse
-    print reset
-    STDOUT.flush
+    if print_status
+      print reset
+      STDOUT.flush
+    end
     count
   end
 
